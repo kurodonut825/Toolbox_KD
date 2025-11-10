@@ -1,6 +1,12 @@
 {
     "NAME":"Toolbox_kurodonut",
     "VERSION":"v1.0",
+
+    "LABEL":"KD_plugin",
+    "PALETTE":"KD_Palette",
+    "DEPTH_MAP":"KD_Depth",
+
+
     "asset":{
         "COLOR_AREA":"colorArea.hlsl",
         "COLOR_AREA_EASY":"colorAreaEasy.hlsl",

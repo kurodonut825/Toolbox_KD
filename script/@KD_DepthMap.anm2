@@ -1,0 +1,17 @@
+@深度マスク 
+--infomation:Depth@ ${NAME} ${VERSION}
+--label:${LABEL}\${DEPTH_MAP}
+--track0:閾値,0,1,0,0.001
+--file@_0:深度ファイル
+--[[pixelshader@depthMask:
+${asset.DEPTH_MASK}
+]]
+local border =obj.track0
+local path = _0
+
+
+local time = obj.getvalue("time")
+obj.copybuffer( "tempbuffer","object")
+obj.load(path,time)         
+
+obj.pixelshader("depthMask","object",{"object","tempbuffer"},{border})
