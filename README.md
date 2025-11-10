@@ -9,7 +9,7 @@ Aviutlの汎用的シェーダースクリプトです。
 動作確認済み：Aviutl2 beta18b
 
 ## 導入方法
-1. Releaseから最新バージョンをダウンロード
+1. [Release](https://github.com/kurodonut825/Toolbox_KD/releases)から最新バージョンをダウンロード
 1. zipを解凍
 1. 中の`Toolbox_kurodonut`フォルダをまるごと、`aviutl2/Script`の中に移動させてください。
 
@@ -53,14 +53,17 @@ https://github.com/DepthAnything/Depth-Anything-V2
 参考：出力した深度マップ
 ![alt text](image/tmp1x2xtxye.png)
 
-
-
 #### 活用例
 元画像とマスクした画像の間に文字を挟むことで、このような表現ができます。
 ![alt text](image/image_4.png)
 
 ## LICENSE
 このソフトウェアは MIT ライセンスのもとで公開されます。 詳細は [LICENSE](LICENSE) を参照してください。
+
+## 動かないときとか
+不具合や要望、分からない等ありましたら作成者のXに連絡ください。大体みてます。
+
+https://x.com/kurodonut
 
 ## Change Log
 #### v1.0 (2025-11-11)
