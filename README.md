@@ -9,7 +9,9 @@ Aviutlの汎用的シェーダースクリプトです。
 動作確認済み：Aviutl2 beta18b
 
 ## 導入方法
-
+1. Releaseから最新バージョンをダウンロード
+1. zipを解凍
+1. 中の`Toolbox_kurodonut`フォルダをまるごと、`aviutl2/Script`の中に移動させてください。
 
 ## スクリプト一覧
 
