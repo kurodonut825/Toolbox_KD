@@ -1,0 +1,10 @@
+{
+    "NAME":"Toolbox_kurodonut",
+    "VERSION":"v1.0",
+    "asset":{
+        "COLOR_AREA":"colorArea.hlsl",
+        "COLOR_AREA_EASY":"colorAreaEasy.hlsl",
+        "COLOR_REDUCTION":"colorReduction.hlsl",
+        "DEPTH_MASK":"depthMask.hlsl"
+    }
+}

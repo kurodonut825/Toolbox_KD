@@ -1,0 +1,69 @@
+@カラーグレーディング
+--infomation:Colorgrading@ ${NAME} ${VERSION}
+--label:${NAME}\色調整
+--track0:赤（加算）,-127,127,0,1
+--track1:赤（乗算）,-127,127,0,1
+--track2:緑（加算）,-127,127,0,1
+--track3:緑（乗算）,-127,127,0,1
+--track4:青（加算）,-127,127,0,1
+--track5:青（乗算）,-127,127,0,1
+--track6:全体（加算）,-127,127,0,1
+--track7:全体（乗算）,-127,127,0,1  
+--[[pixelshader@colorArea:
+${asset.COLOR_AREA}
+]]
+
+local t0 =obj.track0
+local t1 =obj.track1
+local t2 =obj.track2
+local t3 =obj.track3
+local t4 =obj.track4
+local t5 =obj.track5
+local t6 =obj.track6
+local t7 =obj.track7
+
+obj.pixelshader("colorArea","object",{"object"},{t0,t1,t2,t3,t4,t5,t6,t7})
+
+
+@カラーグレーディング(簡易)
+--infomation:ColorgradingEasy@ ${NAME} ${VERSION}
+--label:${NAME}\色調整
+--track0:効果量,0,2,0.5,0.01
+--select@_1:効果タイプ, シネマティック=1,フィルム=2,モダン=3,レトロ=4,ホラー=5,ホット=6,ヴァイオレット=7
+--[[pixelshader@colorArea:
+${asset.COLOR_AREA_EASY}
+]]
+local size =obj.track0
+
+if (_1 == 1) then
+    obj.pixelshader("colorArea","object",{"object"},{-15,25,7,-10,15,-10,0,0,size})
+elseif (_1 == 2) then
+    obj.pixelshader("colorArea","object",{"object"},{-10,10,-10,10,0,0,20,-20,size})
+elseif (_1 == 3) then
+    obj.pixelshader("colorArea","object",{"object"},{-20,20,-10,20,5,25,0,0,size})
+elseif (_1 == 4) then
+    obj.pixelshader("colorArea","object",{"object"},{0,0,10,-1,26,-50,0,0,size})
+elseif (_1 == 5) then
+    obj.pixelshader("colorArea","object",{"object"},{0,-10,0,0,20,-10,-5,5,size})
+elseif (_1 == 6) then
+    obj.pixelshader("colorArea","object",{"object"},{0,20,0,15,0,-0,5,0,size})
+elseif (_1 == 7) then
+    obj.pixelshader("colorArea","object",{"object"},{-7,-3,-53,73,12,-19,0,0,size})
+end
+
+@減色
+--infomation:ColorReduction@ ${NAME} ${VERSION}
+--label:${NAME}\色調整
+--track0:粒度,1,127,10,1
+--[[pixelshader@ColorReduction:
+${asset.COLOR_REDUCTION}
+]]
+local scale =obj.track0
+obj.pixelshader("ColorReduction","object",{"object"},{scale})
+
+
+
+
+
+
+
