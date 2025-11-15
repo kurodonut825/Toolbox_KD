@@ -53,12 +53,41 @@ def create_zip_with_replace(source_dir, output_zip, replace_map, asset_contents,
                 else:
                     print(f"警告: {file_path} が見つかりませんでした。ZIPに追加されません。")
 
+# 変換処理を行う関数（追加）
+def process_files_and_output(source_dir, output_parent_dir, replace_map, asset_contents):
+    patterns = {f"${{{key}}}": value for key, value in replace_map.items() if key != 'asset'}
+    
+    for key, content in asset_contents.items():
+        patterns[f"${{asset.{key}}}"] = content
+
+    for root, dirs, files in os.walk(source_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            
+            # 親ディレクトリへの出力パスを構築
+            relative_path_in_script = os.path.relpath(file_path, source_dir)
+            output_path = os.path.join(output_parent_dir, relative_path_in_script)
+
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+            with open(file_path, 'r', encoding='utf-8') as infile:
+                content = infile.read()
+                for pattern, replacement in patterns.items():
+                    content = content.replace(pattern, replacement)
+            
+            with open(output_path, 'w', encoding='utf-8') as outfile:
+                outfile.write(content)
+
 if __name__ == "__main__":
     SOURCE_DIR = "script"
     ASSET_DIR = "Asset"
     IMAGE_DIR = "image"
     REPLACE_JSON = "replace.json"
     EXTRA_FILES_TO_INCLUDE = ["LICENSE", "README.md"]
+    
+    # 実行ファイルの1階層上のディレクトリ
+    OUTPUT_PARENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    OUTPUT_PARENT_DIR = os.path.dirname(OUTPUT_PARENT_DIR)
 
     with open(REPLACE_JSON, 'r', encoding='utf-8') as f:
         replace_data = json.load(f)
@@ -69,6 +98,14 @@ if __name__ == "__main__":
 
     asset_map = replace_data.get("asset", {})
     all_asset_contents = load_asset_contents(asset_map, ASSET_DIR)
+    
+    # 追加機能: 文字列変換処理後のscriptフォルダ内のファイルを、このpythonファイルの1階層上に出力する
+    process_files_and_output(
+        SOURCE_DIR,
+        OUTPUT_PARENT_DIR,
+        replace_data,
+        all_asset_contents
+    )
     
     create_zip_with_replace(
         SOURCE_DIR, 

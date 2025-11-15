@@ -1,0 +1,98 @@
+@ドット風移動
+--infomation:DotMove@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:間隔X,1,500,10,1
+--track1:間隔Y,1,500,10,1
+--track2:間隔Z,1,500,10,1
+
+obj.ox = -1 * (obj.x + obj.ox ) % obj.track0 + obj.ox
+obj.oy = -1 * (obj.y + obj.oy  ) % obj.track1 + obj.oy
+obj.oz = -1 * (obj.z  + obj.oz ) % obj.track2 + obj.oz
+
+
+@波形参照(座標)
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:倍率X,-1,1,0,0.01
+--track1:倍率Y,-1,1,0,0.01
+--track2:倍率Z,-1,1,0,0.01
+num,ind = obj.num,obj.index
+buf = {}
+obj.getaudio(buf,"audiobuffer","spectrum",num)
+obj.ox = obj.ox+buf[ind+1] * obj.track0 *0.1
+obj.oy = obj.oy+buf[ind+1] * obj.track1 *0.1
+obj.oz = obj.oz+buf[ind+1] * obj.track2 *0.1
+
+
+
+@連続配置
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:X,-2000,2000,10,0.1
+--track1:Y,-2000,2000,10,0.1
+--track2:Z,-2000,2000,10,0.1
+--track3:個数,0,200,10,1
+--check0:フェード,0
+
+function divPosition(x1,y1,z1,x2,y2,z2,percent)
+    local x = x1 + (x2-x1)*percent
+    local y = y1 + (y2-y1)*percent
+    local z = z1 + (z2-z1)*percent
+    return x,y,z
+end
+
+local baseX = obj.ox
+local baseY = obj.oy
+local baseZ = obj.oz
+local posX = obj.track0
+local posY = obj.track1
+local posZ = obj.track2
+local alpha = 1
+obj.setoption("drawtarget","tempbuffer",obj.screen_w,obj.screen_h)
+obj.draw(baseX,baseY)
+for i=0,obj.track3 do
+    if(obj.track3>0)then
+        local percent = 1 / obj.track3 * i
+        if(obj.check0 == true)then
+            alpha = percent
+        end
+        local x,y,z = divPosition(baseX+posX,baseY+posY,baseZ+posZ,baseX,baseY,baseZ,percent)
+        obj.draw(x,y,z,1,alpha)
+    end
+end
+obj.load("tempbuffer")
+
+
+@連続配置（角度指定）
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:角度,-3000,3000,45,0.1
+--track1:間隔,-2000,2000,1,0.1
+--track2:個数,0,200,10,1
+--check0:フェード,0
+
+function getAngle(angle,dist)
+    local rad = math.rad(angle)
+    local x = math.cos(rad) * dist
+    local y = math.sin(rad) * dist
+    return x,y
+end
+
+local baseX = obj.ox
+local baseY = obj.oy
+local posX = obj.track0
+local posY = obj.track1
+local alpha = 1
+obj.setoption("drawtarget","tempbuffer",obj.screen_w,obj.screen_h)
+obj.draw(baseX,baseY)
+for i=0,obj.track2 do
+    local minus = obj.track2 - i
+    if(obj.track2>0)then
+        if(obj.check0 == true)then
+            alpha = percent
+        end
+        x,y = getAngle(obj.track0,obj.track1*minus)
+        obj.draw(baseX+x,baseY+y,0,1,alpha)
+    end
+end
+obj.load("tempbuffer")
