@@ -1,0 +1,125 @@
+@ドット風移動
+--infomation:DotMove@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:間隔X,1,500,10,1
+--track1:間隔Y,1,500,10,1
+--track2:間隔Z,1,500,10,1
+
+obj.ox = -1 * (obj.x + obj.ox ) % obj.track0 + obj.ox
+obj.oy = -1 * (obj.y + obj.oy  ) % obj.track1 + obj.oy
+obj.oz = -1 * (obj.z  + obj.oz ) % obj.track2 + obj.oz
+
+
+@波形参照
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track@x:X,-2,2,0,0.01
+--track@y:Y,-2,2,0,0.01
+--track@z:Z,-2,2,0,0.01
+--track@rx:X軸回転,-2,2,0,0.01
+--track@ry:Y軸回転,-2,2,0,0.01
+--track@rz:Z軸回転,-2,2,0,0.01
+--track@zoom:拡大率,-2,2,0,0.01
+--track@alpha:透明度,-2,2,0,0.01
+--track@aspect:縦横比,-2,2,0,0.01
+num,ind = obj.num,obj.index
+buf = {}
+obj.getaudio(buf,"audiobuffer","spectrum",num)
+obj.ox = obj.ox+buf[ind+1] * x *0.1
+obj.oy = obj.oy+buf[ind+1] * y *0.1
+obj.oz = obj.oz+buf[ind+1] * z *0.1
+obj.rx = obj.rx+buf[ind+1] * rx *0.1
+obj.ry = obj.ry+buf[ind+1] * ry *0.1
+obj.rz = obj.rz+buf[ind+1] * rz *0.1
+obj.zoom = math.max(0,obj.zoom +buf[ind+1] * zoom *0.01)
+obj.alpha = math.max(0,obj.alpha +buf[ind+1] * alpha *0.01)
+obj.aspect = math.max(0,obj.aspect +buf[ind+1] * aspect *0.01)
+
+
+
+@連続配置
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track@posX:X,-2000,2000,100,0.1
+--track@posY:Y,-2000,2000,100,0.1
+--track@posZ:Z,-2000,2000,100,0.1
+--track@rX:X軸回転,-3600,3600,0,0.1
+--track@rY:Y軸回転,-3600,3600,0,0.1
+--track@rZ:Z軸回転,-3600,3600,0,0.1
+--track@scale:拡大率,-300,300,0,0.1
+--track@count:個数,0,200,5,1
+--check0:フェード,0
+
+function divPosition(x1,y1,z1,x2,y2,z2,s1,s2,rx1,ry1,rz1,rx2,ry2,rz2,percent)
+    local x = x1 + (x2-x1)*percent
+    local y = y1 + (y2-y1)*percent
+    local z = z1 + (z2-z1)*percent
+    local s = s1 + (s2-s1)*percent
+    local rx = rx1 + (rx2-rx1)*percent
+    local ry = ry1 + (ry2-ry1)*percent
+    local rz = rz1 + (rz2-rz1)*percent
+    return x,y,z,s,rx,ry,rz
+end
+
+local baseX = obj.ox
+local baseY = obj.oy
+local baseZ = obj.oz
+local baseZoom = obj.zoom
+local baseRX = obj.rx
+local baseRY = obj.ry
+local baseRZ = obj.rz
+local alpha = 1
+obj.setoption("drawtarget","tempbuffer",obj.screen_w,obj.screen_h)
+obj.draw(baseX,baseY)
+for i=0,count do
+    if(count>0)then
+        local percent = 1 / count * i
+        if(obj.check0 == true)then
+            alpha = percent
+        end
+        local x,y,z,zoom,rx,ry,rz = divPosition(
+                                        baseX+posX,baseY+posY,baseZ+posZ,
+                                        baseX,baseY,baseZ,
+                                        baseZoom+(scale*0.1),baseZoom,
+                                        baseRX+rX,baseRY+rY,baseRZ+rZ,
+                                        baseRX,baseRY,baseRZ,
+                                        percent)
+        obj.draw(x,y,z,math.max(0,zoom),alpha,rx,ry,rz)
+    end
+end
+obj.load("tempbuffer")
+
+
+@連続配置（角度指定）
+--infomation:SoundToPosition@ ${NAME} ${VERSION}
+--label:${LABEL}\${ANIMATION_MAP}
+--track0:角度,-3000,3000,45,0.1
+--track1:間隔,-2000,2000,1,0.1
+--track2:個数,0,200,10,1
+--check0:フェード,0
+
+function getAngle(angle,dist)
+    local rad = math.rad(angle)
+    local x = math.cos(rad) * dist
+    local y = math.sin(rad) * dist
+    return x,y
+end
+
+local baseX = obj.ox
+local baseY = obj.oy
+local posX = obj.track0
+local posY = obj.track1
+local alpha = 1
+obj.setoption("drawtarget","tempbuffer",obj.screen_w,obj.screen_h)
+obj.draw(baseX,baseY)
+for i=0,obj.track2 do
+    local minus = obj.track2 - i
+    if(obj.track2>0)then
+        if(obj.check0 == true)then
+            alpha = percent
+        end
+        x,y = getAngle(obj.track0,obj.track1*minus)
+        obj.draw(baseX+x,baseY+y,0,1,alpha)
+    end
+end
+obj.load("tempbuffer")
